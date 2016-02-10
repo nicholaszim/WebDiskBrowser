@@ -5,11 +5,11 @@
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
-</head>
-
-<body>
     <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+</head>
+
+<body ng-controller="FileSystemCtrl">
     <div class="w3-container" id="mainContainer">
         <div class="row">
             <div class="w3-container w3-quarter w3-white">
@@ -46,15 +46,34 @@
                     </form>
                     <div class="row">
                         <div class="w3-container w3-third">
-                            <ul class="w3-ul w3-card-4 w3-white" style="height:150px">
+                            <ul class="w3-ul w3-card-4 w3-white w3-tiny">
                                 <li class="w3-black"><i class="fa fa-hdd-o"></i>&nbsp;Disks</li>
+                            </ul>
+                            <ul class="w3-ul w3-card-4 w3-white w3-tiny" style="height:150px; overflow: auto">
+                                <li ng-repeat="disk in disks">
+                                    {{disk}}
+                                </li>
                             </ul>
                         </div>
                         <div class="w3-container w3-twothird">
-                            <ul class="w3-ul w3-card-4 w3-white" style="height:300px">
+                            <ul class="w3-ul w3-card-4 w3-white w3-tiny">
                                 <li class="w3-black"><i class="fa fa-file-o"></i>&nbsp;Files and directories</li>
                             </ul>
+                            <ul class="w3-ul w3-card-4 w3-white w3-tiny" style="height:300px; overflow: auto">
+                                <li><a href="#"><i class="fa fa-ellipsis-h"></i></a></li>
+                                <li ng-repeat="file in files">
+                                    {{file}}
+                                </li>
+                            </ul>
                         </div>
+                        <script>
+                            function FileSystemCtrl($scope){
+                                $scope.disks = [];
+                                $scope.disks = ["C:\\","C:\\","C:\\","C:\\"];
+                                $scope.files = [];
+                                $scope.files = ["MyComputer", "Recycled Bin", "Word.exe"];
+                            }
+                        </script>
                     </div>
                 </div>
                 <br>
