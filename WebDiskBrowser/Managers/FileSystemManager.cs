@@ -49,15 +49,23 @@ namespace WebDiskBrowser.Managers
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		public IEnumerable<FileSystemInfo> ReturnFileSystemEntriesInfo(string path)
+		public IEnumerable<string> ReturnFileSystemEntriesInfo(string path)
 		{
 			var dirInfo = new DirectoryInfo(path);
 			if (dirInfo.Exists)
 			{
 				//return dirInfo.EnumerateFileSystemEntries(path, "*.*", SearchOption.TopDirectoryOnly);
-				return dirInfo.EnumerateFileSystemInfos();
+				return ConvertEntries(dirInfo.EnumerateFileSystemInfos());
 			}
 			else return null;
+		}
+
+		private IEnumerable<string>ConvertEntries(IEnumerable<FileSystemInfo> collection)
+		{
+			foreach (var item in collection)
+			{
+				yield return item.Name;
+			}
 		}
 		/// <summary>
 		/// Return a string that represent a name of current directory.

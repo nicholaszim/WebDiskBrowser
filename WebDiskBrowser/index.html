@@ -69,15 +69,38 @@
                         <script>
                             'use strict'
                             var fileSysApp = angular.module('fileSysApp', []);
-                            fileSysApp.controller('FileSystemCtrl', function($scope){
-                                $scope.disks = [];
+                            // separate function for injection.
+                            function FileSystemCtrl($scope, $http){
+                                $http.get('~/api/FileSystem').success(function(data){
+                                    $scope.disks = data.viewModel.Drives;
+                                    $scope.files = data.viewModel.Entries;
+                                    $scope.less10 = data.viewModel.Count10mb;
+                                    $scope.less50 = data.viewModel.Count50mb;
+                                    $scope.more100 = data.viewModel.Count100mb;
+                                }).error(function(){
+                                    console.warn("Server is not responding.");
+                                });
+                            }
+                            FileSystemCtrl.$inject = ['$scope', '$http'];
+                            fileSysApp.controller('FileSystemCtrl', FileSystemCtrl
+                                                  /*function($scope, $http){
+                                $http.get('~/api/FileSystem').success(function(data){
+                                    $scope.disks = data.viewModel.Drives;
+                                    $scope.files = data.viewModel.Entries;
+                                    $scope.less10 = data.viewModel.Count10mb;
+                                    $scope.less50 = data.viewModel.Count50mb;
+                                    $scope.more100 = data.viewModel.Count100mb;
+                                }).error(function(){
+                                    console.warn("Server is not responding.");
+                                });*/
+                                /*$scope.disks = [];
                                 $scope.disks = ["C:\\","C:\\","C:\\","C:\\"];
                                 $scope.files = [];
                                 $scope.files = ["MyComputer", "Recycled Bin", "Word.exe"];
                                 $scope.less10 = 32;
                                 $scope.less50 = 43;
                                 $scope.more100 = 4;
-                                $scope.path = "C:\\Program Files"             
+                                $scope.path = "C:\\Program Files"*/             
                             });
                             
                             /*function FileSystemCtrl($scope){

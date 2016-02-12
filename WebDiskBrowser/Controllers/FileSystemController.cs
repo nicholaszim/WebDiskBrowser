@@ -5,11 +5,62 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using WebDiskBrowser.Managers;
+using WebDiskBrowser.Models;
 
 namespace WebDiskBrowser.Controllers
 {
     public class FileSystemController : ApiController
     {
+		private FileSystemManager _fsManager;
+
+		public FileSystemController()
+		{
+			_fsManager = new FileSystemManager();
+		}
+		[ActionName("default")]
+		public HttpResponseMessage GetAll()
+		{
+			var viewModel = new FileSystemViewModel();
+			var drives = _fsManager.ReturnDrives();
+			var defaultPath = _fsManager.ReturnDesktopPath();
+			var dirName = _fsManager.ReturnDirectoryName(defaultPath);
+			var fileSysEntriesInfo = _fsManager.ReturnFileSystemEntriesInfo(defaultPath);
+			var less10mbcount = _fsManager.ReturnCount(defaultPath, entry => entry.Length < 10485760);
+			var less50mbcount = _fsManager.ReturnCount(defaultPath, entry => entry.Length > 10485760 && entry.Length < 52428800);
+			var morethan100mb = _fsManager.ReturnCount(defaultPath, entry => entry.Length > 104857600);
+			viewModel.Drives = drives;
+			viewModel.DirectoryName = dirName;
+			viewModel.DirectoryPath = defaultPath;
+			viewModel.Entries = fileSysEntriesInfo;
+			viewModel.Count10mb = less10mbcount;
+			viewModel.Count50mb = less50mbcount;
+			viewModel.Count100mb = morethan100mb;
+			return Request.CreateResponse(HttpStatusCode.OK, viewModel);
+		}
+		[ActionName("current")]
+		public HttpResponseMessage GetCurrentDirectory(string path)
+		{
+			var dirName = _fsManager.ReturnDirectoryName(path);
+			if (dirName == null)
+			{
+				return Request.CreateResponse(HttpStatusCode.NotFound);
+			}
+			else return Request.CreateResponse(HttpStatusCode.OK, dirName);
+		}
+		[ActionName("new")]
+		public HttpResponseMessage GetNew(string path)
+		{
+			var fileSysEntriesInfo = _fsManager.ReturnFileSystemEntriesInfo(path);
+			var less10mbcount = _fsManager.ReturnCount(path, entry => entry.Length < 10485760);
+			var less50mbcount = _fsManager.ReturnCount(path, entry => entry.Length > 10485760 && entry.Length < 52428800);
+			var morethan100mb = _fsManager.ReturnCount(path, entry => entry.Length > 104857600);
+			if (fileSysEntriesInfo == null || less10mbcount == -1 || less50mbcount == -1 || morethan100mb == -1)
+			{
+				return Request.CreateResponse(HttpStatusCode.NotFound);
+			}
+			else return Request.CreateResponse(HttpStatusCode.OK, 
+				new FileSystemViewModel { Entries = fileSysEntriesInfo, Count10mb = less10mbcount, Count50mb = less50mbcount, Count100mb = morethan100mb });
+		}
 		//private FileSystemManager _fsManager;
 
 		//public FileSystemController()

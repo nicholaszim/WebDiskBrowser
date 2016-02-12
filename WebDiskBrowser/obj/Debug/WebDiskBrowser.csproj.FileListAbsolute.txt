@@ -43,3 +43,4 @@ D:\My files\C#\Repos\WebDiskBrowser\WebDiskBrowser\bin\System.Web.WebPages.Razor
 D:\My files\C#\Repos\WebDiskBrowser\WebDiskBrowser\bin\Antlr3.Runtime.pdb
 D:\My files\C#\Repos\WebDiskBrowser\WebDiskBrowser\obj\Debug\WebDiskBrowser.dll
 D:\My files\C#\Repos\WebDiskBrowser\WebDiskBrowser\obj\Debug\WebDiskBrowser.pdb
+D:\My files\C#\Repos\WebDiskBrowser\WebDiskBrowser\obj\Debug\WebDiskBrowser.csprojResolveAssemblyReference.cache
