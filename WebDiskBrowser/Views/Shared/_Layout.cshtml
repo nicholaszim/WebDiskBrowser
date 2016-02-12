@@ -1,41 +1,59 @@
 ﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-</head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
-                    <li>@Html.ActionLink("API", "Index", "Help", new { area = "" }, null)</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+<html ng-app="FileSysApp">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	@Styles.Render("~/Content/w3")
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+	@Scripts.Render("~/bundles/jquery")
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+	<script src="~/Scripts/angularCustomScripts/app.js"></script>
+	<script src="~/Scripts/angularCustomScripts/controllers.js"></script>
+	<script src="~/Scripts/angularCustomScripts/services.js"></script>
+</head>
+<body ng-controller="FSAController">
+	<div class="w3-container" id="mainContainer">
+		<div class="w3-row">
+			<div class="w3-container w3-quarter w3-white"></div>
+			<div class="w3-half w3-light-blue w3-border">@RenderBody()</div>
+			<div class="w3-container w3-quarter w3-white"></div>
+		</div>
+	</div>
+	<script>
+		'use strict'
+		/*app.js*/
+		var fsAppModule = angular.module('FileSysApp', [
+			'fsAppControllers',
+			'fsAppServices'
+		]);
+	</script>
+	<script>
+		/*controllers.js*/
+		var fsAppControllers = angular.module('fsAppControllers', []);
+
+		//fsAppControllers.controller('FileSystemCtrl', ['$scope', 'FSREST',
+		//	function ($scope, FSREST) {
+		//		$scope.FileSysInfo = FSREST.query();
+		//	}]);
+		// defining controller as function for future minification.
+		function FileSystemCtrl($scope, $http) {
+			/*do stuff with scopes here*/
+		}
+
+		FileSystemCtrl.$inject = ['$scope', '$http'];
+		fsAppControllers.controller('FileSystemCtrl', FileSystemCtrl);
+	</script>
+	<script>
+		/*services.js*/
+		var fsAppServices = angular.module('fsAppServices', ['ngResource']);
+
+		fsAppServices.factory('FSREST', ['$resource',
+			function ($resource) {
+				return $resource('/////', {}, {
+					query: { method: 'GET', }
+				});
+			}]);
+	</script>
 </body>
 </html>

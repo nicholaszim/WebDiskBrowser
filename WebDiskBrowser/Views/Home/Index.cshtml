@@ -1,24 +1,58 @@
-﻿<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>ASP.NET Web API is a framework that makes it easy to build HTTP services that reach
-        a broad range of clients, including browsers and mobile devices. ASP.NET Web API
-        is an ideal platform for building RESTful applications on the .NET Framework.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301870">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301871">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301872">Learn more &raquo;</a></p>
-    </div>
+﻿<div class="w3-center">
+	<h4>SIMPLE AS DOOR</h4>
+	<h1 class="w3-xxxlarge w3-animate-bottom">WEB FILE BROWSER</h1>
+	<h4>BROUGHT TO YOU USING WEBAPI2 AND ANGULARJS</h4>
+	<br />
+	<div class="w3-container" id="dataContainer">
+		<table class="w3-table w3-border">
+			<tr class="w3-black">
+				<th>Less 10Mb</th>
+				<th>10mb-50Mb</th>
+				<th>More 100Mb</th>
+			</tr>
+			<tr class="w3-white">
+				<td>{{less10}}</td>
+				<td>{{less50}}</td>
+				<td>{{more100}}</td>
+			</tr>
+		</table>
+		<form class="w3-container" id="searchContainer">
+			<p>
+				<input class="w3-input w3-border" type="text" value="{{path}}">
+			</p>
+		</form>
+		<div class="w3-row">
+			<div class="w3-container w3-third" id="diskContainer">
+				<ul class="w3-ul w3-card-4 w3-white w3-tiny">
+					<li class="w3-black"><i class="fa fa-hdd-o"></i>&nbsp;Disks</li>
+				</ul>
+				<ul class="w3-ul w3-card-4 w3-white w3-tiny" style="height:150px; overflow: auto">
+					<li ng-repeat="disk in disks">
+						{{disk}}
+					</li>
+				</ul>
+			</div>
+			<div class="w3-container w3-twothird" id="entriesContainer">
+				<ul class="w3-ul w3-card-4 w3-white w3-tiny">
+					<li class="w3-black"><i class="fa fa-file-o"></i>&nbsp;Files and directories</li>
+				</ul>
+				<ul class="w3-ul w3-card-4 w3-white w3-tiny" style="height:300px; overflow: auto">
+					<li><a href="#"><i class="fa fa-ellipsis-h"></i></a></li>
+					<li ng-repeat="file in files">
+						{{file}}
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<br />
+	<footer class="w3-container w3-padding-32 33-red w3-center" id="footerContainer">
+		<h4>Follow Us</h4>
+		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Rss"><i class="fa fa-rss"></i></a>
+		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Facebook"><i class="fa fa-facebook"></i></a>
+		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Twitter"><i class="fa fa-twitter"></i></a>
+		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Google +"><i class="fa fa-google-plus"></i></a>
+		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Linkedin"><i class="fa fa-linkedin"></i></a>
+		<p>&copy; Copyright whatever</p>
+	</footer>
 </div>
