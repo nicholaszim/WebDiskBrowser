@@ -12,8 +12,8 @@ namespace WebDiskBrowser
 			// Web API configuration and services
 			//config.Formatters.Add(config.Formatters.JsonFormatter);
 			//config.Formatters.Remove(config.Formatters.XmlFormatter);
-			//var xml = GlobalConfiguration.Configuration.Formatters.XmlFormatter;
-			//xml.UseXmlSerializer = true;
+			var xml = GlobalConfiguration.Configuration.Formatters.XmlFormatter;
+			xml.UseXmlSerializer = true;
 			// Web API routes
 			config.MapHttpAttributeRoutes();
 
