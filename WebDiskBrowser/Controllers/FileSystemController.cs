@@ -17,6 +17,7 @@ namespace WebDiskBrowser.Controllers
 		{
 			_fsManager = new FileSystemManager();
 		}
+		[HttpGet]
 		[ActionName("default")]
 		public HttpResponseMessage GetAll()
 		{
@@ -37,6 +38,7 @@ namespace WebDiskBrowser.Controllers
 			viewModel.Count100mb = morethan100mb;
 			return Request.CreateResponse(HttpStatusCode.OK, viewModel);
 		}
+		[HttpGet]
 		[ActionName("current")]
 		public HttpResponseMessage GetCurrentDirectory(string path)
 		{
@@ -47,6 +49,7 @@ namespace WebDiskBrowser.Controllers
 			}
 			else return Request.CreateResponse(HttpStatusCode.OK, dirName);
 		}
+		[HttpGet]
 		[ActionName("new")]
 		public HttpResponseMessage GetNew(string path)
 		{

@@ -6,19 +6,20 @@
 	<div class="w3-container" id="dataContainer">
 		<table class="w3-table w3-border">
 			<tr class="w3-black">
-				<th>Less 10Mb</th>
-				<th>10mb-50Mb</th>
-				<th>More 100Mb</th>
+				<th class="w3-center">Less 10Mb</th>
+				<th class="w3-center">10mb-50Mb</th>
+				<th class="w3-center">More 100Mb</th>
 			</tr>
 			<tr class="w3-white">
-				<td>{{less10}}</td>
-				<td>{{less50}}</td>
-				<td>{{more100}}</td>
+				<td class="w3-center">{{less10}}</td>
+				<td class="w3-center">{{less50}}</td>
+				<td class="w3-center">{{more100}}</td>
 			</tr>
 		</table>
-		<form class="w3-container" id="searchContainer">
+		<form class="w3-container" id="searchContainer" ng-submit="getContent()">
 			<p>
-				<input class="w3-input w3-border" type="text" value="{{path}}">
+				<input class="w3-input w3-border" type="text" ng-model="searchPath">
+				<pre>{{slashPath}}</pre>
 			</p>
 		</form>
 		<div class="w3-row">
@@ -27,8 +28,8 @@
 					<li class="w3-black"><i class="fa fa-hdd-o"></i>&nbsp;Disks</li>
 				</ul>
 				<ul class="w3-ul w3-card-4 w3-white w3-tiny" style="height:150px; overflow: auto">
-					<li ng-repeat="disk in disks">
-						{{disk}}
+					<li class="w3-left-align" ng-repeat="disk in disks">
+						<a href="#" ng-click="getDisk(disk)"><i class="fa fa-hdd-o"></i>&nbsp;{{disk}}</a>
 					</li>
 				</ul>
 			</div>
@@ -37,9 +38,11 @@
 					<li class="w3-black"><i class="fa fa-file-o"></i>&nbsp;Files and directories</li>
 				</ul>
 				<ul class="w3-ul w3-card-4 w3-white w3-tiny" style="height:300px; overflow: auto">
-					<li><a href="#"><i class="fa fa-ellipsis-h"></i></a></li>
-					<li ng-repeat="file in files">
-						{{file}}
+					<li class="w3-left-align"><a ng-model="pathList" href="#" ng-click="moveUp()"><i class="fa fa-ellipsis-h"></i></a></li>
+					@*<li class="w3-left-align" ng-repeat="file in files" ng-bind-html="file | tagFilter">
+					</li>*@
+					<li class="w3-left-align" ng-repeat="file in files">
+						<a href="#" ng-click="DirStuffNow(file)">{{file}}</a>
 					</li>
 				</ul>
 			</div>
