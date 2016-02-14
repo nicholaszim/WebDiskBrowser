@@ -26,6 +26,10 @@ namespace WebDiskBrowser
 
 			bundles.Add(new StyleBundle("~/Content/w3").Include(
 						"~/Content/W3/w3.css"));
+
+			bundles.Add(new ScriptBundle("~/bundles/angular").Include(
+						"~/Scripts/angular.{version}.js",
+						"~/Scripts/angular-*"));
 		}
 	}
 }
