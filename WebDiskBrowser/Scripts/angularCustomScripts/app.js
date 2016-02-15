@@ -1,7 +1,10 @@
 ﻿'use strict';
-/*Application anularJS modula*/
+/*Application anularJS module*/
 
-var fsAppModule = angular.module('FileSysApp', [
-	'fsAppControllers',
-	'fsAppServices'
+/*A main module with submodules it depends on*/
+var mainModule = angular.module('FSApplication', [
+	'FSAControllers',
+	'FSAFilters',
+	'ngSanitize',
+	'FSAServices'
 ]);

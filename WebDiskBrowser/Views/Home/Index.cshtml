@@ -1,61 +1,46 @@
-﻿<div class="w3-center">
-	<h4>SIMPLE AS DOOR</h4>
-	<h1 class="w3-xxxlarge w3-animate-bottom">WEB FILE BROWSER</h1>
-	<h4>BROUGHT TO YOU USING WEBAPI2 AND ANGULARJS</h4>
-	<br />
-	<div class="w3-container" id="dataContainer">
-		<table class="w3-table w3-border">
-			<tr class="w3-black">
-				<th class="w3-center">Less 10Mb</th>
-				<th class="w3-center">10mb-50Mb</th>
-				<th class="w3-center">More 100Mb</th>
-			</tr>
-			<tr class="w3-white">
-				<td class="w3-center">{{less10}}</td>
-				<td class="w3-center">{{less50}}</td>
-				<td class="w3-center">{{more100}}</td>
-			</tr>
-		</table>
-		<form class="w3-container" id="searchContainer" ng-submit="getContent()">
-			<p>
-				<input class="w3-input w3-border" type="text" ng-model="searchPath">
-				<pre>{{slashPath}}</pre>
-			</p>
-		</form>
-		<div class="w3-row">
-			<div class="w3-container w3-third" id="diskContainer">
-				<ul class="w3-ul w3-card-4 w3-white w3-tiny">
-					<li class="w3-black"><i class="fa fa-hdd-o"></i>&nbsp;Disks</li>
-				</ul>
-				<ul class="w3-ul w3-card-4 w3-white w3-tiny" style="height:150px; overflow: auto">
-					<li class="w3-left-align" ng-repeat="disk in disks">
-						<a href="#" ng-click="getDisk(disk)"><i class="fa fa-hdd-o"></i>&nbsp;{{disk}}</a>
-					</li>
-				</ul>
-			</div>
-			<div class="w3-container w3-twothird" id="entriesContainer">
-				<ul class="w3-ul w3-card-4 w3-white w3-tiny">
-					<li class="w3-black"><i class="fa fa-file-o"></i>&nbsp;Files and directories</li>
-				</ul>
-				<ul class="w3-ul w3-card-4 w3-white w3-tiny" style="height:300px; overflow: auto">
-					<li class="w3-left-align"><a ng-model="pathList" href="#" ng-click="moveUp()"><i class="fa fa-ellipsis-h"></i></a></li>
-					@*<li class="w3-left-align" ng-repeat="file in files" ng-bind-html="file | tagFilter">
-					</li>*@
-					<li class="w3-left-align" ng-repeat="file in files">
-						<a href="#" ng-click="DirStuffNow(file)">{{file}}</a>
-					</li>
-				</ul>
+﻿<div class="w3-col w3-container w3-padding-0 s12 m6 l6 w3-border" id="main-half">
+	<div class="w3-content w3-card-2">
+		<nav class="w3-navbar w3-padding-small w3-margin-4 w3-theme">
+			<li class="w3-dropdown-hover w3-theme"><a href="#" onclick="w3_open()"><i class="fa fa-hdd-o w3-large"></i></a>
+				<div class="w3-dropdown-content">
+					<ul class="w3-ul">
+						<a href="#" ng-repeat="disk in sysData.disks" ng-click="functions.getDiskEntries(disk)"><i class="fa fa-hdd-o"></i>&#32;<span ng-bind="disk"></span></a>
+					</ul>
+				</div>
+			</li>
+			<li><a href="#" ng-click="functions.getSearchData(sysData.searchPath)"><i class="fa fa-search w3-large"></i></a></li>
+			<li class="w3-col m7 l8"><form ng-submit="functions.getSearchData(sysData.searchPath)"><input class="w3-input w3-white" type="text" ng-model="sysData.searchPath"></form></li>
+			<li><a href="#" ng-click="functions.moveUp(sysData.searchPath)"><i class="fa fa-arrow-up w3-large"></i></a></li>
+			<li><a href="#" ng-click="functions.getInit()"><i class="fa fa-home w3-large"></i></a></li>
+		</nav>
+		<ul class="w3-navbar w3-padding-small w3-margin-4 w3-border w3-border-red">
+			<li class="w3-padding">10 Mb&#32;<span class="w3-badge w3-green"><span ng-bind="sysData.files10mb"></span></span></li>
+			<li class="w3-padding">50 Mb&#32;<span class="w3-badge w3-orange"><span ng-bind="sysData.files50mb"></span></span></li>
+			<li class="w3-padding">100 Mb&#32;<span class="w3-badge w3-theme"><span ng-bind="sysData.files100mb"></span></span></li>
+		</ul>
+	</div>
+	<div class="w3-content w3-card-2" style="height: 680px">
+		<ul class="w3-ul w3-medium w3-padding-small w3-margin-4 w3-border" style="height: 675px; overflow: auto">
+			<li id="alertMe" class="w3-container w3-padding w3-deep-orange" style="display:none">
+				<span onclick="this.parentElement.style.display='none'" class="w3-closebtn"><i class="fa fa-times"></i></span>
+				Danger!
+			</li>
+			<li><a href="#" ng-click="functions.moveUp(sysData.searchPath)"><i class="fa fa-ellipsis-h"></i></a></li>
+			<li class="w3-sand" ng-repeat="entry in sysData.folders" ng-dblclick="functions.getFolderEntries(entry)"><a href="#"><i class="fa fa-folder-o"></i>&#32;<span ng-bind="entry"></span></a></li>
+			<li ng-repeat="entry in sysData.files"><i class="fa fa-file-o"></i>&#32;<span ng-bind="entry"></span></li>
+		</ul>
+		<div id="alertMe" class="w3-container w3-theme" style="display:none">
+			<h3>Danger!</h3>
+			<p>Red often indicates a dangerous or potentially negative action.</p>
+		</div> 
+		<div id="warnMe" class="w3-modal">
+			<div class="w3-modal-content">
+				<div class="w3-container">
+					<span onclick="document.getElementById('warnMe').style.display = 'none'"
+						  class="w3-closebtn">&times;</span>
+					Invalid path. Please try again.
+				</div>
 			</div>
 		</div>
 	</div>
-	<br />
-	<footer class="w3-container w3-padding-32 33-red w3-center" id="footerContainer">
-		<h4>Follow Us</h4>
-		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Rss"><i class="fa fa-rss"></i></a>
-		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Facebook"><i class="fa fa-facebook"></i></a>
-		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Twitter"><i class="fa fa-twitter"></i></a>
-		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Google +"><i class="fa fa-google-plus"></i></a>
-		<a class="w3-btn-floating w3-teal" href="javascript:void(0)" title="Linkedin"><i class="fa fa-linkedin"></i></a>
-		<p>&copy; Copyright whatever</p>
-	</footer>
 </div>

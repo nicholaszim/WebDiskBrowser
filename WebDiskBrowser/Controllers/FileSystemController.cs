@@ -26,6 +26,8 @@ namespace WebDiskBrowser.Controllers
 			var defaultPath = _fsManager.ReturnDesktopPath();
 			var dirName = _fsManager.ReturnDirectoryName(defaultPath);
 			var fileSysEntriesInfo = _fsManager.ReturnFileSystemEntriesInfo(defaultPath);
+			var files = _fsManager.ReturnFilesInfo(defaultPath);
+			var folders = _fsManager.ReturnFolders(defaultPath);
 			var less10mbcount = _fsManager.ReturnCount(defaultPath, entry => entry.Length < 10485760);
 			var less50mbcount = _fsManager.ReturnCount(defaultPath, entry => entry.Length > 10485760 && entry.Length < 52428800);
 			var morethan100mb = _fsManager.ReturnCount(defaultPath, entry => entry.Length > 104857600);
@@ -33,6 +35,8 @@ namespace WebDiskBrowser.Controllers
 			viewModel.DirectoryName = dirName;
 			viewModel.DirectoryPath = defaultPath;
 			viewModel.Entries = fileSysEntriesInfo;
+			viewModel.Files = files;
+			viewModel.Folders = folders;
 			viewModel.Count10mb = less10mbcount;
 			viewModel.Count50mb = less50mbcount;
 			viewModel.Count100mb = morethan100mb;
@@ -54,6 +58,8 @@ namespace WebDiskBrowser.Controllers
 		public HttpResponseMessage GetNew(string path)
 		{
 			var fileSysEntriesInfo = _fsManager.ReturnFileSystemEntriesInfo(path);
+			var files = _fsManager.ReturnFilesInfo(path);
+			var folders = _fsManager.ReturnFolders(path);
 			var less10mbcount = _fsManager.ReturnCount(path, entry => entry.Length < 10485760);
 			var less50mbcount = _fsManager.ReturnCount(path, entry => entry.Length > 10485760 && entry.Length < 52428800);
 			var morethan100mb = _fsManager.ReturnCount(path, entry => entry.Length > 104857600);
@@ -62,7 +68,7 @@ namespace WebDiskBrowser.Controllers
 				return Request.CreateResponse(HttpStatusCode.NotFound);
 			}
 			else return Request.CreateResponse(HttpStatusCode.OK, 
-				new FileSystemViewModel { Entries = fileSysEntriesInfo, Count10mb = less10mbcount, Count50mb = less50mbcount, Count100mb = morethan100mb });
+				new FileSystemViewModel { Entries = fileSysEntriesInfo, Files= files, Folders = folders, Count10mb = less10mbcount, Count50mb = less50mbcount, Count100mb = morethan100mb });
 		}
 		//private FileSystemManager _fsManager;
 

@@ -39,7 +39,7 @@ namespace WebDiskBrowser.Managers.Tests
 			var invalidPath3 = "     ";
 			var invalidPath4 = "sdfodvove iifvbdibda";
 			var invalidPath5 = "C";
-			var invalidPath6 = @"C:\";
+			var invalidPath6 = @"C:/";
 			FileSystemManager fs = new FileSystemManager();
 			var entries = fs.ReturnFileSystemEntries(invalidPath);
 			var entries2 = fs.ReturnFileSystemEntries(invalidPath2);
@@ -53,6 +53,10 @@ namespace WebDiskBrowser.Managers.Tests
 			Assert.IsNull(entries4);
 			Assert.IsNull(entries5);
 			Assert.IsNotNull(entries6);
+			foreach (var entry in entries6)
+			{
+				Console.WriteLine(entry);
+			}
 		}
 
 		[TestMethod()]

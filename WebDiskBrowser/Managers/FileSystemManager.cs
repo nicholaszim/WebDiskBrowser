@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.IO;
+using System.Security.Permissions;
 
 namespace WebDiskBrowser.Managers
 {
@@ -52,12 +53,35 @@ namespace WebDiskBrowser.Managers
 		public IEnumerable<string> ReturnFileSystemEntriesInfo(string path)
 		{
 			var dirInfo = new DirectoryInfo(path);
+			dirInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (dirInfo.Exists)
 			{
 				//return dirInfo.EnumerateFileSystemEntries(path, "*.*", SearchOption.TopDirectoryOnly);
 				return ConvertEntries(dirInfo.EnumerateFileSystemInfos());
 			}
 			else return null;
+		}
+
+		public IEnumerable<string> ReturnFilesInfo(string path)
+		{
+			var fileInfo = new DirectoryInfo(path);
+			fileInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
+			if (fileInfo.Exists)
+			{
+				return ConvertEntries(fileInfo.EnumerateFiles());
+			}
+			return null;
+		}
+
+		public IEnumerable<string> ReturnFolders(string path)
+		{
+			var fileInfo = new DirectoryInfo(path);
+			fileInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
+			if (fileInfo.Exists)
+			{
+				return ConvertEntries(fileInfo.EnumerateDirectories());
+			}
+			return null;
 		}
 
 		private IEnumerable<string>ConvertEntries(IEnumerable<FileSystemInfo> collection)
@@ -75,6 +99,7 @@ namespace WebDiskBrowser.Managers
 		public string ReturnDirectoryName(string path)
 		{
 			var dirInfo = new DirectoryInfo(path);
+			dirInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (dirInfo.Exists)
 			{
 				return dirInfo.Name;
@@ -90,15 +115,43 @@ namespace WebDiskBrowser.Managers
 		public int ReturnCount(string path, Func<FileInfo, bool> method)
 		{
 			var dirInfo = new DirectoryInfo(path);
+			dirInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (dirInfo.Exists)
 			{
-				return dirInfo.EnumerateFiles().AsQueryable().Count(method);
+				return dirInfo.EnumerateFiles("*",SearchOption.AllDirectories).AsQueryable().Count(method);
 			}
 			else
 			{
 				return 0;
 			}
 		}
-	}
 
+		public IEnumerable<string> TryReturnDirectories(string root)
+		{
+			var rootDirectory = new DirectoryInfo(root);
+			if (!rootDirectory.Exists)
+			{
+				return null;
+			}
+			Stack<string> stackDirs = new Stack<string>(30);
+			stackDirs.Push(root);
+
+			while (stackDirs.Count > 0)
+			{
+				string currentDir = stackDirs.Pop();
+				IEnumerable<string> subDirs;
+				try
+				{
+					subDirs = Directory.EnumerateDirectories(currentDir);
+				}
+				catch (UnauthorizedAccessException e)
+				{
+					// implement log;
+					continue;
+				}
+			}
+
+			return null;
+		}
+	}
 }

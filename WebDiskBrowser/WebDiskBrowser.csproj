@@ -189,6 +189,7 @@
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\angularCustomScripts\app.js" />
     <Content Include="Scripts\angularCustomScripts\controllers.js" />
+    <Content Include="Scripts\angularCustomScripts\customs.js" />
     <Content Include="Scripts\angularCustomScripts\filters.js" />
     <Content Include="Scripts\angularCustomScripts\services.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -239,8 +240,10 @@
     <Content Include="Views\Home\IndexO.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LayoutO.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Index1.cshtml" />
+    <Content Include="Views\Shared\_Layout2.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>W3.CSS Case</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3-theme-red.css">
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<body>
+    <div class="w3-row-padding-32">
+        <div class="w3-col w3-container s12 w3-theme" id="header">
+            <h1>
+                <i class="fa fa-folder-o" onclick="w3_open()"></i>
+                File Browser
+            </h1>
+        </div>
+        <div class="w3-col w3-container w3-padding-0 s12 m6 l6 w3-border" id="main-half">
+            <div class="w3-content w3-card-2">
+                <nav class="w3-navbar w3-padding-small w3-margin-4 w3-theme">
+                    <li><a href="#"><i class="fa fa-hdd-o w3-large"></i></a></li>
+                    <li><a href="#"><i class="fa fa-search w3-large"></i></a></li>
+                    <li class="w3-col m7 l8"><input class="w3-input w3-white" type="text"></li>
+                    <li><a href="#"><i class="fa fa-arrow-up w3-large"></i></a></li>
+                    <li><a href="#"><i class="fa fa-home w3-large"></i></a></li>
+                </nav> 
+                <ul class="w3-navbar w3-padding-small w3-margin-4 w3-border w3-border-red">
+                    <li class="w3-padding">10 Mb&#32;<span class="w3-badge w3-green">8</span></li>
+                    <li class="w3-padding">50 Mb&#32;<span class="w3-badge w3-orange">8</span></li>
+                    <li class="w3-padding">100 Mb&#32;<span class="w3-badge w3-theme">8</span></li>
+                </ul>
+            </div>
+            <div class="w3-content w3-card-2" style="height: 680px">
+                <ul class="w3-ul w3-xlarge w3-padding-small w3-margin-4 w3-border" style="height: 675px; overflow: auto">
+                    <li><a href="#"><i class="fa fa-ellipsis-h"></i></a></li>
+                    <li class="w3-sand"><a href="#"><i class="fa fa-folder-o"></i>&#32;Program Files</a></li>
+                    <li class="w3-sand"><a href="#"><i class="fa fa-folder-o"></i>&#32;Windows</a></li>
+                    <li class="w3-sand"><a href="#"><i class="fa fa-folder-o"></i>&#32;Stuff</a></li>
+                    <li><a href="#"><i class="fa fa-file-o"></i>&#32;file.exe</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="another-half" class="w3-col w3-container s12 m6 l6 w3-light-grey">
+            <br>
+            <br>
+        </div>
+        <div id="footer" class="w3-col w3-container w3-bottom w3-fixed s12 w3-theme">
+            <h1>
+                <i class="fa fa-folder-o" onclick="w3_open()"></i>
+                Footer
+            </h1>
+        </div>
+    </div>
+</body>
+</html>

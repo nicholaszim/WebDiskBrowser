@@ -1,215 +1,30 @@
 ﻿<!DOCTYPE html>
 
-<html ng-app="FileSysApp">
+<html ng-app="FSApplication">
 <head>
 	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width" />
 	@Styles.Render("~/Content/w3")
 	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="http://www.w3schools.com/lib/w3-theme-red.css">
 	@Scripts.Render("~/bundles/jquery")
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular-sanitize.js"></script>
-	@*<script src="~/Scripts/angularCustomScripts/app.js"></script>
-		<script src="~/Scripts/angularCustomScripts/controllers.js"></script>
-		<script src="~/Scripts/angularCustomScripts/services.js"></script>*@
-	<script>
-		'use strict'
-		/*app.js*/
-		var fsAppModule = angular.module('FileSysApp', [
-			'fsAppControllers',
-			'fsAppFilters',
-			'ngSanitize'
-			//'fsAppServices'
-		]);
-	</script>
-	<script>
-		/*controllers.js*/
-		var fsAppControllers = angular.module('fsAppControllers', []);
-
-		//fsAppControllers.controller('FileSystemCtrl', ['$scope', 'FSREST',
-		//	function ($scope, FSREST) {
-		//		$scope.FileSysInfo = FSREST.query();
-		//	}]);
-		// defining controller as function for future minification.
-		function FSAController($scope, $http) {
-			$scope.getMyCtrlScope = function () {
-				return $scope;
-			};
-			$scope.disks = "";
-			$scope.files = '';
-			$scope.less10 = '';
-			$scope.less50 = '';
-			$scope.more100 = '';
-			$scope.searchPath = '';
-			$scope.httpGet = 'GET';
-			$scope.defaultUrl = '/api/FileSystem/default';
-			$scope.newUrl = '/api/FileSystem/new?path=';
-			$scope.Json = 'JSON';
-			$scope.Xml = 'XML'
-			/*http-requests*/
-			$http({ method: $scope.httpGet, url: $scope.defaultUrl, responseType: $scope.Xml }).
-				success(function (data, status) {
-					$scope.disks = data.Drives;
-					$scope.searchPath = data.DirectoryPath;
-					$scope.files = data.Entries;
-					$scope.less10 = data.Count10mb;
-					$scope.less50 = data.Count50mb;
-					$scope.more100 = data.Count100mb;
-					$scope.pathList = data.DirectoryPath;
-					$scope.slashPath = data.DirectoryPath.replace(/[\\]/g, "/");
-				}).
-				error(function (data, status) {
-					console.warn("Server is not responding.");
-				});
-
-			/*functions*/
-			$scope.getContent = function () {
-				var combinedPath = $scope.newUrl + $scope.searchPath;
-				$http({ method: $scope.httpGet, url: combinedPath, responseType: $scope.Json }).
-					success(function (data, status) {
-						$scope.files = data.Entries;
-						$scope.less10 = data.Count10mb;
-						$scope.less50 = data.Count50mb;
-						$scope.more100 = data.Count100mb;
-						$scope.pathList = $scope.searchPath;
-					}).
-					error(function (data, status) {
-						console.warn("Server is not responding.");
-					});
-			};
-			$scope.getDisk = function (e) {
-				var combinedPath = $scope.newUrl + e;
-				$http({ method: $scope.httpGet, url: combinedPath, responseType: $scope.Json }).
-					success(function (data, status) {
-						$scope.files = data.Entries;
-						$scope.less10 = data.Count10mb;
-						$scope.less50 = data.Count50mb;
-						$scope.more100 = data.Count100mb;
-						$scope.searchPath = e;
-					}).
-					error(function (data, status) {
-						console.warn("Server is not responding.");
-					});
-			};
-			//var intersect = function (e, sube) {
-			//	var index = e.indexOf(sube);
-			//	var result = e.substring(0, index);
-			//	return result;
-			//};
-
-			//var intersect2 = function (e, num) {
-			//	var ar = e.split('\\'); // get an array from string where element are separated by character
-			//	var result = e.substring(0, ar.length)
-			//};
-			var popPath = function (e) {
-				e = e.split('/');
-				console.log("splited: " + e);
-				if (e[e.length - 1] === "") {
-					e.pop();
-				}
-				e.pop();
-				console.log("poped: " + e);
-				if (e[e.length - 1] === "") {
-					e.pop();
-					e = e.join('/');
-					console.log("joined1: " + e);
-					return e;
-				}
-				else {
-					e = e.join('/');
-					console.log("joined2: " + e);
-					console.log(e.length);
-					e = e.length <= 2 ? e.concat('/') : e;
-					return e;
-				}
-			};
-			var killSlash = function (e) {
-				return e.replace(/[\\]/g, "/");
-			};
-
-			var returnSlash = function (e) {
-				return e.replace(/[/]/g, "\\");
-			};
-			$scope.moveUp = function () {
-				var fixedPath = killSlash($scope.searchPath); // kill backslashes
-				var upPath = popPath(fixedPath); // slice off last directory
-				var combinedPath = $scope.newUrl + upPath; // combine with api rul
-				$http({ method: $scope.httpGet, url: combinedPath, responseType: $scope.Json }).
-					success(function (data, status) {
-						$scope.files = data.Entries;
-						$scope.less10 = data.Count10mb;
-						$scope.less50 = data.Count50mb;
-						$scope.more100 = data.Count100mb;
-						$scope.searchPath = returnSlash(upPath);
-					}).
-					error(function (data, status) {
-						console.warn("Server is not responding.");
-					});
-			};
-
-			var checkPath = function (path) {
-				if (path[path.length - 1] != "\\") {
-					return returnSlash(path + "/");
-				}
-				else return killSlash(path);
-			};
-
-			var checkDirName = function (name) {
-				if (name.indexOf(".") != -1) { // check files
-					return false;
-				}
-				else if (name.indexOf("BIN") != -1) // check some wierd folders
-					return false
-				else return true;
-			};
-
-			$scope.DirStuffNow = function (e) {
-				if (!checkDirName(e)) {
-					return false
-				}
-				var newsearchPath = checkPath($scope.searchPath) + e;
-				var combinedPath = $scope.newUrl + newsearchPath;
-				$http({ method: $scope.httpGet, url: combinedPath, responseType: $scope.Json }).
-					success(function (data, status) {
-						$scope.files = data.Entries;
-						$scope.less10 = data.Count10mb;
-						$scope.less50 = data.Count50mb;
-						$scope.more100 = data.Count100mb;
-						$scope.searchPath = returnSlash(newsearchPath);
-					}).
-					error(function (data, status) {
-						console.warn("Server is not responding.");
-					});
-			}
-
-			//$scope.filterDirs = function () {
-			//	return function (input) {
-			//		return input.indexOf(".") == -1 ? '<a href="#">' + input + '</a>' : input;
-			//	}
-			//};
-			//$scope.filterDirs2 = function (s) {
-			//	return (s.indexOf(".") == -1 ? "<a href='#'>" + s + "</a>" : s);
-			//}
-		}
-
-		FSAController.$inject = ['$scope', '$http'];
-		var fsAppFilters = angular.module('fsAppFilters', []);
-		function tagFilter() {
-			return function (input) {
-				return input.indexOf(".") == -1 ? "<a href='#' id='dir'>" + input + "</a>" : input;
-			}
-		}
-		fsAppFilters.filter('tagFilter', tagFilter);
-
-		fsAppControllers.controller('FSAController', FSAController);
-	</script>
+	@Scripts.Render("~/bundles/angular")
+	@Scripts.Render("~/bundles/angular-custom")
 </head>
-<body ng-controller="FSAController">
-	<div class="w3-container" id="mainContainer">
-		<div class="w3-row">
-			<div class="w3-container w3-quarter w3-white"></div>
-			<div class="w3-half w3-light-blue w3-border">@RenderBody()</div>
-			<div class="w3-container w3-quarter w3-white"></div>
+<body ng-controller="mainController">
+	<div class="w3-row-padding-32">
+		<div class="w3-col w3-container s12 w3-theme" id="header">
+			<h1>
+				<i class="fa fa-folder-o" onclick="w3_open()"></i>
+				File Browser
+			</h1>
+		</div>
+		@RenderBody()
+		<div id="footer" class="w3-col w3-container w3-bottom w3-fixed s12 w3-theme">
+			<h1>
+				<i class="fa fa-folder-o" onclick="w3_open()"></i>
+				Footer
+			</h1>
 		</div>
 	</div>
 </body>
