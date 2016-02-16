@@ -115,9 +115,10 @@ namespace WebDiskBrowser.Managers
 		public int ReturnCount(string path, Func<FileInfo, bool> method)
 		{
 			var dirInfo = new DirectoryInfo(path);
-			dirInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (dirInfo.Exists)
 			{
+				//FileIOPermission readPermission = new FileIOPermission(FileIOPermissionAccess.Read, path);
+				//readPermission.AllLocalFiles = FileIOPermissionAccess;
 				return dirInfo.EnumerateFiles("*",SearchOption.AllDirectories).AsQueryable().Count(method);
 			}
 			else
@@ -126,16 +127,19 @@ namespace WebDiskBrowser.Managers
 			}
 		}
 
-		public IEnumerable<string> TryReturnDirectories(string root)
+		public IEnumerable<long> TryCountFiles(string root, out System.Collections.Specialized.StringCollection log)
 		{
-			var rootDirectory = new DirectoryInfo(root);
-			if (!rootDirectory.Exists)
+			log = new System.Collections.Specialized.StringCollection();
+			if (!Directory.Exists(root))
 			{
 				return null;
 			}
 			Stack<string> stackDirs = new Stack<string>(30);
 			stackDirs.Push(root);
-
+			var count10mb = 0L;
+			var count50mb = 0L;
+			var count100mb = 0L;
+			var countExceptions = 0L;
 			while (stackDirs.Count > 0)
 			{
 				string currentDir = stackDirs.Pop();
@@ -146,12 +150,86 @@ namespace WebDiskBrowser.Managers
 				}
 				catch (UnauthorizedAccessException e)
 				{
-					// implement log;
+					/*log here*/
+					var str = String.Format("Path: none; \n Attribute: none; \n Exception: UnauthorizedAccessException; \n Level: EnumerateDirectories level");
+					log.Add(str);
+					countExceptions += 1;
 					continue;
 				}
+				catch (DirectoryNotFoundException e)
+				{
+					/*log here*/
+					var str = String.Format("Path: none; \n Attribute: none; \n Exception: DirectoryNotFoundException; \n Level: EnumerateDirectories level");
+					log.Add(str);
+					countExceptions += 1;
+					continue;
+				}
+				IEnumerable<string> files = null;
+				try
+				{
+					files = Directory.EnumerateFiles(currentDir);
+				}
+				catch (UnauthorizedAccessException)
+				{
+					throw;
+					var str = String.Format("Path: none; \n Attribute: none; \n Exception: UnauthorizedAccessException; \n Level: EnumerateDirectories level");
+					log.Add(str);
+					countExceptions += 1;
+					continue;
+				}
+				catch (System.IO.DirectoryNotFoundException e)
+				{
+					countExceptions += 1;
+					var str = String.Format("Path: none; \n Attribute: none; \n Exception: DirectoryNotFoundException; \n Level: EnumerateDirectories level");
+					log.Add(str);
+					continue;
+				}
+				foreach (var file in files)
+				{
+					try
+					{
+						FileInfo currentFI = new FileInfo(file);
+						if (currentFI.Length < 10485760)
+						{
+							count10mb += 1;
+						}
+						else if (currentFI.Length > 10485760 && currentFI.Length < 52428800)
+						{
+							count50mb += 1;
+						}
+						else if (currentFI.Length < 104857600)
+						{
+							count100mb += 1;
+						}
+						else
+						{
+							//File.SetAttributes(file, attribute);
+							continue;
+						}
+					}
+					//!!
+					catch (UnauthorizedAccessException e)
+					{
+						throw;
+						var str = String.Format("Path: {0}; \n Attribute: {1}; \n Exception: UnauthorizedAccessException; \n Level: file foreach level", file, File.GetAttributes(file));
+						log.Add(str);
+						countExceptions += 1;
+						continue;
+					}
+					catch (FileNotFoundException e)
+					{
+						var str = String.Format("Path: {0}; \n Attribute: {1}; \n Exception: FileNotFoundException; \n Level: file foreach level", file, File.GetAttributes(file));
+						log.Add(str);
+						countExceptions += 1;
+						continue;
+					}
+				}
+				foreach (var str in subDirs)
+				{
+					stackDirs.Push(str);
+				}
 			}
-
-			return null;
+			return new List<long>(){ count10mb, count50mb, count100mb, countExceptions};
 		}
 	}
 }
