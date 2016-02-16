@@ -100,21 +100,5 @@ namespace WebDiskBrowser.Managers.Tests
 			}
 
 		}
-
-		[TestMethod()]
-		public void TryCountFilesTest()
-		{
-			var log = new System.Collections.Specialized.StringCollection();
-			FileSystemManager fs = new FileSystemManager();
-			IEnumerable<long> countsList;
-			var path = @"C:\Users\Nick";
-			var path2 = @"C:\Program Files\Internet Explorer";
-			countsList = fs.TryCountFiles(path, out log);
-			Assert.IsNotNull(countsList);
-			foreach (var item in log)
-			{
-				Console.WriteLine(item);
-			}
-		}
 	}
 }
