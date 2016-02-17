@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using WebDiskBrowser.Models;
 
 namespace WebDiskBrowser.Managers.Tests
 {
@@ -40,7 +39,7 @@ namespace WebDiskBrowser.Managers.Tests
 			var invalidPath3 = "     ";
 			var invalidPath4 = "sdfodvove iifvbdibda";
 			var invalidPath5 = "C";
-			var invalidPath6 = @"C:/Users/Nick/AppData";
+			var invalidPath6 = @"C:/";
 			FileSystemManager fs = new FileSystemManager();
 			var entries = fs.ReturnFileSystemEntries(invalidPath);
 			var entries2 = fs.ReturnFileSystemEntries(invalidPath2);
@@ -100,68 +99,6 @@ namespace WebDiskBrowser.Managers.Tests
 				Assert.IsTrue(count == 1);
 			}
 
-		}
-
-		[TestMethod()]
-		public void ReturnAvailableDirectoriesTest()
-		{
-			FileSystemManager fs = new FileSystemManager();
-			var path = @"C:\Users\Nick\AppData\";
-			var result = fs.ReturnAvailableDirectories(path);
-			foreach (var item in result)
-			{
-				Console.WriteLine(item);
-			}
-			Assert.IsNotNull(result);
-		}
-
-		[TestMethod()]
-		public void ReturnAvailableFilesTest()
-		{
-			FileSystemManager fs = new FileSystemManager();
-			var path = @"C:\Users\Nick";
-			var result = fs.ReturnAvailableFiles(path);
-			foreach (var item in result)
-			{
-				Console.WriteLine(item);
-			}
-			Assert.IsNotNull(result);
-		}
-
-		[TestMethod()]
-		public void ReturnAvailableDirInfoTest()
-		{
-			FileSystemManager fs = new FileSystemManager();
-			var path = @"C:\Windows\System32";
-			FileSystemViewModel vm = new FileSystemViewModel();
-			vm = fs.ReturnAvailableDirInfo(path);
-			foreach (var item in vm.Folders)
-			{
-				Console.WriteLine(item);
-			}
-			foreach (var item in vm.Files)
-			{
-				Console.WriteLine(item);
-			}
-			Console.WriteLine(vm.Count10mb);
-			Console.WriteLine(vm.Count50mb);
-			Console.WriteLine(vm.Count100mb);
-			Assert.IsNotNull(vm.Files);
-			Assert.IsNotNull(vm.Folders);
-		}
-
-		[TestMethod()]
-		public void TraverseAvailableFilesTest()
-		{
-			FileSystemManager fs = new FileSystemManager();
-			var path = @"C:\";
-			var delegates = new List<Func<FileInfo, bool>>() { entry => entry.Length < 10485760, entry => entry.Length > 10485760 && entry.Length < 52428800, entry => entry.Length > 104857600 };
-			var filesCount = fs.TraverseAvailableFiles(path, delegates);
-			foreach (var item in filesCount)
-			{
-				Console.WriteLine(item.Value);
-			}
-			Assert.IsNotNull(filesCount);
 		}
 	}
 }
