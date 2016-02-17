@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.IO;
 using System.Security.Permissions;
+using WebDiskBrowser.Models;
 
 namespace WebDiskBrowser.Managers
 {
@@ -53,7 +54,6 @@ namespace WebDiskBrowser.Managers
 		public IEnumerable<string> ReturnFileSystemEntriesInfo(string path)
 		{
 			var dirInfo = new DirectoryInfo(path);
-			dirInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (dirInfo.Exists)
 			{
 				//return dirInfo.EnumerateFileSystemEntries(path, "*.*", SearchOption.TopDirectoryOnly);
@@ -65,7 +65,6 @@ namespace WebDiskBrowser.Managers
 		public IEnumerable<string> ReturnFilesInfo(string path)
 		{
 			var fileInfo = new DirectoryInfo(path);
-			fileInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (fileInfo.Exists)
 			{
 				return ConvertEntries(fileInfo.EnumerateFiles());
@@ -76,7 +75,6 @@ namespace WebDiskBrowser.Managers
 		public IEnumerable<string> ReturnFolders(string path)
 		{
 			var fileInfo = new DirectoryInfo(path);
-			fileInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (fileInfo.Exists)
 			{
 				return ConvertEntries(fileInfo.EnumerateDirectories());
@@ -84,7 +82,7 @@ namespace WebDiskBrowser.Managers
 			return null;
 		}
 
-		private IEnumerable<string>ConvertEntries(IEnumerable<FileSystemInfo> collection)
+		private IEnumerable<string> ConvertEntries(IEnumerable<FileSystemInfo> collection)
 		{
 			foreach (var item in collection)
 			{
@@ -99,7 +97,6 @@ namespace WebDiskBrowser.Managers
 		public string ReturnDirectoryName(string path)
 		{
 			var dirInfo = new DirectoryInfo(path);
-			dirInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (dirInfo.Exists)
 			{
 				return dirInfo.Name;
@@ -115,10 +112,9 @@ namespace WebDiskBrowser.Managers
 		public int ReturnCount(string path, Func<FileInfo, bool> method)
 		{
 			var dirInfo = new DirectoryInfo(path);
-			dirInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access);
 			if (dirInfo.Exists)
 			{
-				return dirInfo.EnumerateFiles("*",SearchOption.AllDirectories).AsQueryable().Count(method);
+				return dirInfo.EnumerateFiles().Count(method);
 			}
 			else
 			{
@@ -126,32 +122,189 @@ namespace WebDiskBrowser.Managers
 			}
 		}
 
-		public IEnumerable<string> TryReturnDirectories(string root)
-		{
-			var rootDirectory = new DirectoryInfo(root);
-			if (!rootDirectory.Exists)
-			{
-				return null;
-			}
-			Stack<string> stackDirs = new Stack<string>(30);
-			stackDirs.Push(root);
+//--------------------------------------------------
 
-			while (stackDirs.Count > 0)
+		/// <summary>
+		/// Determines if file/directory located on specified path exists/available or not.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public static bool ExistsOrAvialable(string path)
+		{
+			return Directory.Exists(path) || File.Exists(path);
+		}
+
+		/// <summary>
+		/// Returns only collection of available file or directory names.
+		/// </summary>
+		/// <param name="collection"></param>
+		/// <returns></returns>
+		public IEnumerable<string> TryConvertEntries(IEnumerable<FileSystemInfo> collection)
+		{
+			foreach (var item in collection)
 			{
-				string currentDir = stackDirs.Pop();
-				IEnumerable<string> subDirs;
+				if (item.Exists)
+				{
+					yield return item.Name;
+				}
+				else continue;
+			}
+		}
+		/// <summary>
+		/// Returns collection of only available directory names.
+		/// This method is not exception-safe. 
+		/// Use ExistOrAvailable method to check path value before using this method.
+		/// </summary>
+		/// <param name="path">path to a root directory</param>
+		/// <returns></returns>
+		public IEnumerable<string> ReturnAvailableDirectories(string path)
+		{
+			var getInfo = new DirectoryInfo(path);
+			var getSubDirs = getInfo.EnumerateDirectories();
+			return TryConvertEntries(getSubDirs);
+		}
+		/// <summary>
+		/// Returns collection of only available file names.
+		/// This method is not exception-safe. 
+		/// Use ExistOrAvailable method to check path value before using this method.
+		/// </summary>
+		/// <param name="path">path to a root directory</param>
+		/// <returns></returns>
+		public IEnumerable<string> ReturnAvailableFiles(string path)
+		{
+			var getInfo = new DirectoryInfo(path);
+			var getFiles = getInfo.EnumerateFiles();
+			return TryConvertEntries(getFiles);
+		}
+		/// <summary>
+		/// Only counts files in subdirectories.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="method"></param>
+		/// <returns></returns>
+		public int CountAvailableFiles(string path, Func<FileInfo, bool> method)
+		{
+			var getInfo = new DirectoryInfo(path);
+			var getFiles = getInfo.EnumerateFiles();
+			var counter = 0;
+			foreach (var item in getFiles)
+			{
+				if (item.Exists)
+				{
+					if (method(item))
+					{
+						counter += 1;
+					}
+					else continue;
+				}
+				else continue;
+			}
+			return counter;
+		}
+		/// <summary>
+		/// Traverses a directory tree starting with root specified root directory. Files in directories are processed with a mthods in delegates list.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="methods"></param>
+		/// <returns></returns>
+		public Dictionary<Func<FileInfo, bool>, int> TraverseAvailableFiles(string path, List<Func<FileInfo, bool>> methods)
+		{
+			Dictionary<Func<FileInfo, bool>, int> delegateCounters = new Dictionary<Func<FileInfo, bool>, int>();
+			foreach (var item in methods)
+			{
+				delegateCounters.Add(item, 0);
+			}
+			//var counter = 0;
+			Stack<string> dirs = new Stack<string>(20);
+			dirs.Push(path);
+
+			while(dirs.Count > 0)
+			{
+				string currentDir = dirs.Pop();
+				IEnumerable<DirectoryInfo> subDirs;
 				try
 				{
-					subDirs = Directory.EnumerateDirectories(currentDir);
+					var dirInfo = new DirectoryInfo(currentDir);
+					subDirs = dirInfo.EnumerateDirectories();
 				}
-				catch (UnauthorizedAccessException e)
+				catch (UnauthorizedAccessException e) { continue; }
+				catch (DirectoryNotFoundException e) { continue; }
+
+				IEnumerable<FileInfo> files = null;
+				try
 				{
-					// implement log;
-					continue;
+					var dirInfo = new DirectoryInfo(currentDir);
+					files = dirInfo.EnumerateFiles();
+				}
+				catch (UnauthorizedAccessException e) { continue; }
+				catch (DirectoryNotFoundException e) { continue; }
+				foreach (var file in files)
+				{
+					try
+					{
+						foreach (var method in methods)
+						{
+							if (method(file))
+							{
+								delegateCounters[method] += 1;
+							}
+							else continue;
+						}
+					}
+					catch (FileNotFoundException e)
+					{
+						continue;
+					}
+				}
+				foreach (var dir in subDirs)
+				{
+					dirs.Push(dir.FullName);
 				}
 			}
+			return delegateCounters;
+		}
 
+		/// <summary>
+		/// Exception-safe method wrapper for ReturnAvailableFiles and ReturnAvailableDirectories.
+		/// </summary>
+		/// <param name="path">path to root directory</param>
+		/// <returns></returns>
+		public FileSystemViewModel ReturnAvailableDirInfo(string path)
+		{
+			switch (ExistsOrAvialable(path))
+			{
+				case false:
+					return null;
+				case true:
+					var model = new FileSystemViewModel();
+					model.Folders = ReturnAvailableDirectories(path);
+					model.Files = ReturnAvailableFiles(path);
+					model.Count10mb = CountAvailableFiles(path, entry => entry.Length < 10485760);
+					model.Count50mb = CountAvailableFiles(path, entry => entry.Length > 10485760 && entry.Length < 52428800);
+					model.Count100mb = CountAvailableFiles(path, entry => entry.Length > 104857600);
+					return model;
+			}
 			return null;
 		}
+		public FileSystemViewModel TraverseAvailableDirInfo(string path, List<Func<FileInfo, bool>> delegates)
+		{
+			switch (ExistsOrAvialable(path))
+			{
+				case false:
+					return null;
+				case true:
+					var model = new FileSystemViewModel();
+					model.Folders = ReturnAvailableDirectories(path);
+					model.Files = ReturnAvailableFiles(path);
+					var filesCount = TraverseAvailableFiles(path, delegates);
+					model.Count10mb = filesCount[delegates[0]];
+					model.Count50mb = filesCount[delegates[1]];
+					model.Count100mb = filesCount[delegates[2]];
+					return model;
+			}
+			return null;
+		}
+
+
 	}
 }
