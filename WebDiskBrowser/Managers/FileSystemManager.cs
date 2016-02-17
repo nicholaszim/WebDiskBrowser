@@ -300,6 +300,9 @@ namespace WebDiskBrowser.Managers
 					model.Count10mb = filesCount[delegates[0]];
 					model.Count50mb = filesCount[delegates[1]];
 					model.Count100mb = filesCount[delegates[2]];
+					//model.Count10mb = TraverseAvailableFiles(path, delegates);
+					//model.Count50mb = TraverseAvailableFiles(path, delegates);
+					//model.Count100mb = TraverseAvailableFiles(path, delegates);
 					return model;
 			}
 			return null;
