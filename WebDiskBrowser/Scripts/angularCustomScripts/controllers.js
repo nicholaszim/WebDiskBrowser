@@ -42,16 +42,15 @@ function mainController($scope, $http) {
 				$scope.sysData.files100mb = data.Count100mb;
 			}).
 			error(function (data, status) {
-				console.warn('http.init: server is not responding');
-				document.getElementById('id01').style.display = 'block';
+				document.getElementById('alertMe').style.display = 'list-item';
 			});
 		},
 
 		/*gets a data for ui using specified path as input.*/
 		getContext: function (e) {
-			//var result = Process(e, $scope.sysData.disks);
+			/*//var result = Process(e, $scope.sysData.disks);
 			//var path = $scope.httpData.url.getAll + result;
-			//$scope.sysData.searchPath = returnBSlash(result);
+			//$scope.sysData.searchPath = returnBSlash(result);*/
 			$http({ method: "GET", url: e }).
 				success(function (data, status) {
 					$scope.sysData.entries = data.Entries;
@@ -60,6 +59,7 @@ function mainController($scope, $http) {
 					$scope.sysData.files10mb = data.Count10mb;
 					$scope.sysData.files50mb = data.Count50mb;
 					$scope.sysData.files100mb = data.Count100mb;
+					$scope.sysData.searchPath = data.DirectoryPath;
 				}).error(function (data, status) {
 					document.getElementById('alertMe').style.display = 'list-item';
 				});
@@ -68,14 +68,14 @@ function mainController($scope, $http) {
 		getSearchData: function (e){
 			var result = Process(e, $scope.sysData.disks);
 			var path = $scope.httpData.url.getAll + result;
-			var pretify = returnBSlash(result);
-			$scope.sysData.searchPath = checkSearch(pretify);
+			/*var pretify = returnBSlash(result);*/
+			/*$scope.sysData.searchPath = checkSearch(pretify);*/
 			return $scope.functions.getContext(path);
 		},
 
 		/*function uses to retrieve entries for a disk drive*/
 		getDiskEntries: function (e) {
-			$scope.sysData.searchPath = e;
+			/*$scope.sysData.searchPath = e;*/
 			var path = $scope.httpData.url.getAll + e;
 			return $scope.functions.getContext(path);
 		},
@@ -83,8 +83,8 @@ function mainController($scope, $http) {
 		moveUp: function (e) {
 			if (isDisk(e, $scope.sysData.disks)) { return false };
 			var upPath = tryMoveUp(e);
-			var pretify = returnBSlash(upPath);
-			$scope.sysData.searchPath = pretify;
+			/*var pretify = returnBSlash(upPath);*/
+			/*$scope.sysData.searchPath = pretify;*/
 			var path = $scope.httpData.url.getAll + pretify;
 			return $scope.functions.getContext(path);
 		},
@@ -93,7 +93,7 @@ function mainController($scope, $http) {
 			var checked = Process($scope.sysData.searchPath, $scope.sysData.disks)
 			var combine = checked + encodeURIComponent(e);
 			var path = $scope.httpData.url.getAll + combine;
-			$scope.sysData.searchPath = returnBSlash(checked + e);
+			/*$scope.sysData.searchPath = returnBSlash(checked + e);*/
 			return $scope.functions.getContext(path);
 		}
 	}
