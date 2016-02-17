@@ -159,9 +159,16 @@ namespace WebDiskBrowser.Managers
 		/// <returns></returns>
 		public IEnumerable<string> ReturnAvailableDirectories(string path)
 		{
-			var getInfo = new DirectoryInfo(path);
-			var getSubDirs = getInfo.EnumerateDirectories();
-			return TryConvertEntries(getSubDirs);
+			try
+			{
+				var getInfo = new DirectoryInfo(path);
+				var getSubDirs = getInfo.EnumerateDirectories();
+				return TryConvertEntries(getSubDirs);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return null;
+			}
 		}
 		/// <summary>
 		/// Returns collection of only available file names.
@@ -172,9 +179,16 @@ namespace WebDiskBrowser.Managers
 		/// <returns></returns>
 		public IEnumerable<string> ReturnAvailableFiles(string path)
 		{
-			var getInfo = new DirectoryInfo(path);
-			var getFiles = getInfo.EnumerateFiles();
-			return TryConvertEntries(getFiles);
+			try
+			{
+				var getInfo = new DirectoryInfo(path);
+				var getFiles = getInfo.EnumerateFiles();
+				return TryConvertEntries(getFiles);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return null;
+			}
 		}
 		/// <summary>
 		/// Only counts files in subdirectories.
@@ -322,6 +336,7 @@ namespace WebDiskBrowser.Managers
 						var vmodel = new FileSystemViewModel();
 						vmodel.Folders = ReturnAvailableDirectories(parsedPath);
 						vmodel.Files = ReturnAvailableFiles(parsedPath);
+						if (vmodel.Folders == null || vmodel.Files == null) { return null; }
 						var filesCount1 = TraverseAvailableFiles(parsedPath, delegates);
 						vmodel.Count10mb = filesCount1[delegates[0]];
 						vmodel.Count50mb = filesCount1[delegates[1]];
@@ -333,6 +348,7 @@ namespace WebDiskBrowser.Managers
 					var model = new FileSystemViewModel();
 					model.Folders = ReturnAvailableDirectories(path);
 					model.Files = ReturnAvailableFiles(path);
+					if (model.Folders == null || model.Files == null) { return null; }
 					var filesCount2 = TraverseAvailableFiles(path, delegates);
 					model.Count10mb = filesCount2[delegates[0]];
 					model.Count50mb = filesCount2[delegates[1]];
