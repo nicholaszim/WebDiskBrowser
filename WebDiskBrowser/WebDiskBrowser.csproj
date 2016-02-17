@@ -191,6 +191,7 @@
     <Content Include="Scripts\angularCustomScripts\controllers.js" />
     <Content Include="Scripts\angularCustomScripts\customs.js" />
     <Content Include="Scripts\angularCustomScripts\filters.js" />
+    <Content Include="Scripts\angularCustomScripts\providers.js" />
     <Content Include="Scripts\angularCustomScripts\services.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

@@ -6,5 +6,6 @@ var mainModule = angular.module('FSApplication', [
 	'FSAControllers',
 	'FSAFilters',
 	'ngSanitize',
-	'FSAServices'
+	'FSAServices',
+	'FSAProviders'
 ]);

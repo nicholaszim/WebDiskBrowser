@@ -107,7 +107,7 @@ var popString = function (path, delimiter) {
 var Process = function (e, collection) {
 	switch (isDisk(e, collection)) {
 		case true:
-			return e;
+			return e; // < -- inplement session storage here?
 			break;
 		case false:
 			var pretify = killBSlash(e);

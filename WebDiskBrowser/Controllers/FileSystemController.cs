@@ -36,7 +36,6 @@ namespace WebDiskBrowser.Controllers
 				return Request.CreateResponse(HttpStatusCode.NotFound);
 			}
 			viewModel.Drives = _fsManager.ReturnDrives();
-			viewModel.DirectoryPath = defaultPath;
 			return Request.CreateResponse(HttpStatusCode.OK, viewModel);
 		}
 

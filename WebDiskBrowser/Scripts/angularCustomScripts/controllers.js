@@ -40,6 +40,7 @@ function mainController($scope, $http) {
 				$scope.sysData.files10mb = data.Count10mb;
 				$scope.sysData.files50mb = data.Count50mb;
 				$scope.sysData.files100mb = data.Count100mb;
+				sessionStorage.setItem('Home', JSON.stringify(data));
 			}).
 			error(function (data, status) {
 				document.getElementById('alertMe').style.display = 'list-item';
@@ -67,7 +68,8 @@ function mainController($scope, $http) {
 		/*gets a data for ui using specified path as input.*/
 		getSearchData: function (e){
 			var result = Process(e, $scope.sysData.disks);
-			var path = $scope.httpData.url.getAll + result;
+			var pretify = returnBSlash(result); //!!
+			var path = $scope.httpData.url.getAll + pretify; // !!!
 			/*var pretify = returnBSlash(result);*/
 			/*$scope.sysData.searchPath = checkSearch(pretify);*/
 			return $scope.functions.getContext(path);
@@ -75,7 +77,7 @@ function mainController($scope, $http) {
 
 		/*function uses to retrieve entries for a disk drive*/
 		getDiskEntries: function (e) {
-			/*$scope.sysData.searchPath = e;*/
+			/*$scope.sysData.searchPath = e;*/ // < -- implement session storage here?
 			var path = $scope.httpData.url.getAll + e;
 			return $scope.functions.getContext(path);
 		},
@@ -83,8 +85,8 @@ function mainController($scope, $http) {
 		moveUp: function (e) {
 			if (isDisk(e, $scope.sysData.disks)) { return false };
 			var upPath = tryMoveUp(e);
-			/*var pretify = returnBSlash(upPath);*/
-			/*$scope.sysData.searchPath = pretify;*/
+			var pretify = returnBSlash(upPath);
+			/*$scope.sysData.searchPath = pretify;*/ //< -- implement session storage here?
 			var path = $scope.httpData.url.getAll + pretify;
 			return $scope.functions.getContext(path);
 		},
@@ -99,7 +101,21 @@ function mainController($scope, $http) {
 	}
 	/*startup model initialization*/
 	$scope.init = function () {
-		return $scope.functions.getInit();
+		if (sessionStorage.getItem('Home')) {
+			var data = JSON.parse(sessionStorage.getItem('Home'));
+			$scope.sysData.disks = data.Drives;
+			$scope.sysData.entries = data.Entries;
+			$scope.sysData.files = data.Files;
+			$scope.sysData.folders = data.Folders;
+			$scope.sysData.searchPath = data.DirectoryPath;
+			$scope.sysData.files10mb = data.Count10mb;
+			$scope.sysData.files50mb = data.Count50mb;
+			$scope.sysData.files100mb = data.Count100mb;
+		}
+		else {
+			return $scope.functions.getInit();
+		}
+		
 	}
 	$scope.init();
 
