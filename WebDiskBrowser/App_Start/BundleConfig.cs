@@ -33,13 +33,6 @@ namespace WebDiskBrowser
 			bundles.Add(new ScriptBundle("~/bundles/angular-custom").IncludeDirectory("~/Scripts/angularCustomScripts","*.js",false));
 
 			bundles.UseCdn = true;
-
-			var FontAwesomeCdn = "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css";
-			var AngularJSCDN = "https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js";
-			var AngularSanitizeCDN = "https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular-sanitize.js";
-
-			//bundles.Add(new StyleBundle("~/Content/fontAw", FontAwesomeCdn).Include(
-			//			FontAwesomeCdn));
 		}
 	}
 }

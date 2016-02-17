@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
 
 namespace WebDiskBrowser
 {
@@ -10,10 +7,6 @@ namespace WebDiskBrowser
 		public static void Register(HttpConfiguration config)
 		{
 			// Web API configuration and services
-			//config.Formatters.Add(config.Formatters.JsonFormatter);
-			//config.Formatters.Remove(config.Formatters.XmlFormatter);
-			//var xml = GlobalConfiguration.Configuration.Formatters.XmlFormatter;
-			//xml.UseXmlSerializer = true;
 			// Web API routes
 			config.MapHttpAttributeRoutes();
 

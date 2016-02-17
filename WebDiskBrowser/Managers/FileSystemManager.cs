@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.IO;
-using System.Security.Permissions;
 using WebDiskBrowser.Models;
 
 namespace WebDiskBrowser.Managers
@@ -131,6 +130,7 @@ namespace WebDiskBrowser.Managers
 		/// <returns></returns>
 		public static bool ExistsOrAvialable(string path)
 		{
+			//HttpServerUtility server = new HttpServerUtility();
 			return Directory.Exists(path) || File.Exists(path);
 		}
 
@@ -179,8 +179,8 @@ namespace WebDiskBrowser.Managers
 		/// <summary>
 		/// Only counts files in subdirectories.
 		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="method"></param>
+		/// <param name="path">path that needs to be accessed in order to get info of its internal entries</param>
+		/// <param name="method">method for processing files.</param>
 		/// <returns></returns>
 		public int CountAvailableFiles(string path, Func<FileInfo, bool> method)
 		{
@@ -202,10 +202,11 @@ namespace WebDiskBrowser.Managers
 			return counter;
 		}
 		/// <summary>
-		/// Traverses a directory tree starting with root specified root directory. Files in directories are processed with a mthods in delegates list.
+		/// Traverses a directory tree starting with root specified root directory. Files in directories are processed with a methods in delegates list.
 		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="methods"></param>
+		/// <param name="path">path that needs to be accessed</param>
+		/// <param name="delegates">A delegate list of methods - part of processing logic.
+		/// Methods are needed to determine if some files info satisfy some conditions</param>
 		/// <returns></returns>
 		public Dictionary<Func<FileInfo, bool>, int> TraverseAvailableFiles(string path, List<Func<FileInfo, bool>> methods)
 		{
@@ -227,8 +228,8 @@ namespace WebDiskBrowser.Managers
 					var dirInfo = new DirectoryInfo(currentDir);
 					subDirs = dirInfo.EnumerateDirectories();
 				}
-				catch (UnauthorizedAccessException e) { continue; }
-				catch (DirectoryNotFoundException e) { continue; }
+				catch (UnauthorizedAccessException) { continue; }
+				catch (DirectoryNotFoundException) { continue; }
 
 				IEnumerable<FileInfo> files = null;
 				try
@@ -236,8 +237,8 @@ namespace WebDiskBrowser.Managers
 					var dirInfo = new DirectoryInfo(currentDir);
 					files = dirInfo.EnumerateFiles();
 				}
-				catch (UnauthorizedAccessException e) { continue; }
-				catch (DirectoryNotFoundException e) { continue; }
+				catch (UnauthorizedAccessException) { continue; }
+				catch (DirectoryNotFoundException) { continue; }
 				foreach (var file in files)
 				{
 					try
@@ -251,7 +252,7 @@ namespace WebDiskBrowser.Managers
 							else continue;
 						}
 					}
-					catch (FileNotFoundException e)
+					catch (FileNotFoundException)
 					{
 						continue;
 					}
@@ -262,6 +263,23 @@ namespace WebDiskBrowser.Managers
 				}
 			}
 			return delegateCounters;
+		}
+		/// <summary>
+		/// Tries to parse a string path. If successfull returns converted path if not - null
+		/// </summary>
+		/// <param name="path">path as input</param>
+		/// <returns></returns>
+		public string TryParse(string path)
+		{
+			if (Directory.Exists(Uri.UnescapeDataString(path)) || File.Exists(Uri.UnescapeDataString(path)))
+			{
+				return Uri.UnescapeDataString(path);
+			}
+			else if(Directory.Exists(HttpUtility.HtmlDecode(path)) || File.Exists(HttpUtility.HtmlDecode(path)))
+			{
+				return HttpUtility.HtmlDecode(path);
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -286,20 +304,39 @@ namespace WebDiskBrowser.Managers
 			}
 			return null;
 		}
+		/// <summary>
+		/// Exception-safe method wrapper which includes path checking and decoding logic and files/folders deep processing.
+		/// </summary>
+		/// <param name="path">path that needs to be accessed</param>
+		/// <param name="delegates">A delegate list of methods - part of processing logic.</param>
+		/// <returns></returns>
 		public FileSystemViewModel TraverseAvailableDirInfo(string path, List<Func<FileInfo, bool>> delegates)
 		{
 			switch (ExistsOrAvialable(path))
 			{
 				case false:
-					return null;
+					var parsedPath = TryParse(path);
+					if (parsedPath == null) { return null; }
+					else
+					{
+						var vmodel = new FileSystemViewModel();
+						vmodel.Folders = ReturnAvailableDirectories(parsedPath);
+						vmodel.Files = ReturnAvailableFiles(parsedPath);
+						var filesCount1 = TraverseAvailableFiles(parsedPath, delegates);
+						vmodel.Count10mb = filesCount1[delegates[0]];
+						vmodel.Count50mb = filesCount1[delegates[1]];
+						vmodel.Count100mb = filesCount1[delegates[2]];
+						vmodel.DirectoryPath = parsedPath;
+						return vmodel;
+					}
 				case true:
 					var model = new FileSystemViewModel();
 					model.Folders = ReturnAvailableDirectories(path);
 					model.Files = ReturnAvailableFiles(path);
-					var filesCount = TraverseAvailableFiles(path, delegates);
-					model.Count10mb = filesCount[delegates[0]];
-					model.Count50mb = filesCount[delegates[1]];
-					model.Count100mb = filesCount[delegates[2]];
+					var filesCount2 = TraverseAvailableFiles(path, delegates);
+					model.Count10mb = filesCount2[delegates[0]];
+					model.Count50mb = filesCount2[delegates[1]];
+					model.Count100mb = filesCount2[delegates[2]];
 					model.DirectoryPath = path;
 					return model;
 			}

@@ -21,6 +21,10 @@ function mainController($scope, $http) {
 			getAll: '/api/FileSystem/new?path='
 		}
 	}
+	$scope.errorData = {
+		errorMessage: "",
+		errorCode: 0
+	}
 
 	/*Helper to get scope for children in repeaters and stuff*/
 	$scope.getCtrlScope = function () {
@@ -40,18 +44,17 @@ function mainController($scope, $http) {
 				$scope.sysData.files10mb = data.Count10mb;
 				$scope.sysData.files50mb = data.Count50mb;
 				$scope.sysData.files100mb = data.Count100mb;
-				sessionStorage.setItem('Home', JSON.stringify(data));
 			}).
 			error(function (data, status) {
+				$scope.errorData.errorCode = status;
+				$scope.errorData.errorMessage = data;
 				document.getElementById('alertMe').style.display = 'list-item';
 			});
 		},
 
 		/*gets a data for ui using specified path as input.*/
 		getContext: function (e) {
-			/*//var result = Process(e, $scope.sysData.disks);
-			//var path = $scope.httpData.url.getAll + result;
-			//$scope.sysData.searchPath = returnBSlash(result);*/
+			document.getElementById('alertMe').style.display = 'none';
 			$http({ method: "GET", url: e }).
 				success(function (data, status) {
 					$scope.sysData.entries = data.Entries;
@@ -60,24 +63,23 @@ function mainController($scope, $http) {
 					$scope.sysData.files10mb = data.Count10mb;
 					$scope.sysData.files50mb = data.Count50mb;
 					$scope.sysData.files100mb = data.Count100mb;
-					$scope.sysData.searchPath = data.DirectoryPath;
+					$scope.sysData.searchPath = returnBSlash(data.DirectoryPath);
 				}).error(function (data, status) {
+					$scope.errorData.errorCode = status;
+					$scope.errorData.errorMessage = data;
 					document.getElementById('alertMe').style.display = 'list-item';
 				});
 		},
 		/*gets a data for ui using specified path as input.*/
 		getSearchData: function (e){
 			var result = Process(e, $scope.sysData.disks);
-			var pretify = returnBSlash(result); //!!
-			var path = $scope.httpData.url.getAll + pretify; // !!!
-			/*var pretify = returnBSlash(result);*/
-			/*$scope.sysData.searchPath = checkSearch(pretify);*/
+			var encode = encodeURIComponent(result);
+			var path = $scope.httpData.url.getAll + encode; // !!!
 			return $scope.functions.getContext(path);
 		},
 
 		/*function uses to retrieve entries for a disk drive*/
 		getDiskEntries: function (e) {
-			/*$scope.sysData.searchPath = e;*/ // < -- implement session storage here?
 			var path = $scope.httpData.url.getAll + e;
 			return $scope.functions.getContext(path);
 		},
@@ -86,36 +88,21 @@ function mainController($scope, $http) {
 			if (isDisk(e, $scope.sysData.disks)) { return false };
 			var upPath = tryMoveUp(e);
 			var pretify = returnBSlash(upPath);
-			/*$scope.sysData.searchPath = pretify;*/ //< -- implement session storage here?
+			pretify = encodeURIComponent(pretify);
 			var path = $scope.httpData.url.getAll + pretify;
 			return $scope.functions.getContext(path);
 		},
 		/*gets entries for specific folder*/
 		getFolderEntries: function (e) {
 			var checked = Process($scope.sysData.searchPath, $scope.sysData.disks)
-			var combine = checked + encodeURIComponent(e);
+			var combine = encodeURIComponent(checked + e);
 			var path = $scope.httpData.url.getAll + combine;
-			/*$scope.sysData.searchPath = returnBSlash(checked + e);*/
 			return $scope.functions.getContext(path);
 		}
 	}
 	/*startup model initialization*/
 	$scope.init = function () {
-		if (sessionStorage.getItem('Home')) {
-			var data = JSON.parse(sessionStorage.getItem('Home'));
-			$scope.sysData.disks = data.Drives;
-			$scope.sysData.entries = data.Entries;
-			$scope.sysData.files = data.Files;
-			$scope.sysData.folders = data.Folders;
-			$scope.sysData.searchPath = data.DirectoryPath;
-			$scope.sysData.files10mb = data.Count10mb;
-			$scope.sysData.files50mb = data.Count50mb;
-			$scope.sysData.files100mb = data.Count100mb;
-		}
-		else {
-			return $scope.functions.getInit();
-		}
-		
+		return $scope.functions.getInit();
 	}
 	$scope.init();
 

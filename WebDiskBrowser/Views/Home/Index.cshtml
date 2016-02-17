@@ -23,7 +23,7 @@
 		<ul class="w3-ul w3-medium w3-padding-small w3-margin-4 w3-border" style="height: 675px; overflow: auto">
 			<li id="alertMe" class="w3-container w3-padding w3-deep-orange" style="display:none">
 				<span onclick="this.parentElement.style.display='none'" class="w3-closebtn"><i class="fa fa-times"></i></span>
-				Danger!
+				<span ng-bind="errorData.errorCode"></span>&#32;<span ng-bind="errorData.errorMessage"></span>
 			</li>
 			<li><a href="#" ng-click="functions.moveUp(sysData.searchPath)"><i class="fa fa-ellipsis-h"></i></a></li>
 			<li class="w3-sand" ng-repeat="entry in sysData.folders" ng-dblclick="functions.getFolderEntries(entry)"><a href="#"><i class="fa fa-folder-o"></i>&#32;<span ng-bind="entry"></span></a></li>

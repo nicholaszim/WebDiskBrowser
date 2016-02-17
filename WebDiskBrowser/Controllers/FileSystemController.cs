@@ -33,7 +33,7 @@ namespace WebDiskBrowser.Controllers
 			viewModel = _fsManager.TraverseAvailableDirInfo(defaultPath, methods);
 			if (viewModel == null)
 			{
-				return Request.CreateResponse(HttpStatusCode.NotFound);
+				return Request.CreateResponse(HttpStatusCode.NotFound, "Failed to find requested file/category");
 			}
 			viewModel.Drives = _fsManager.ReturnDrives();
 			return Request.CreateResponse(HttpStatusCode.OK, viewModel);
@@ -53,22 +53,9 @@ namespace WebDiskBrowser.Controllers
 			viewModel = _fsManager.TraverseAvailableDirInfo(path, methods);
 			if (viewModel == null)
 			{
-				return Request.CreateResponse(HttpStatusCode.NotFound);
+				return Request.CreateResponse(HttpStatusCode.NotFound, "Failed to find requested file/category");
 			}
 			else return Request.CreateResponse(HttpStatusCode.OK, viewModel);
-		}
-
-
-		[HttpGet]
-		[ActionName("current")]
-		public HttpResponseMessage GetCurrentDirectory(string path)
-		{
-			var dirName = _fsManager.ReturnDirectoryName(path);
-			if (dirName == null)
-			{
-				return Request.CreateResponse(HttpStatusCode.NotFound);
-			}
-			else return Request.CreateResponse(HttpStatusCode.OK, dirName);
 		}
 	}
 }
