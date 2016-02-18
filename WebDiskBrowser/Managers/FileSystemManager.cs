@@ -121,7 +121,7 @@ namespace WebDiskBrowser.Managers
 			}
 		}
 
-//--------------------------------------------------
+		//--------------------------------------------------
 
 		/// <summary>
 		/// Determines if file/directory located on specified path exists/available or not.
@@ -145,7 +145,11 @@ namespace WebDiskBrowser.Managers
 			{
 				if (item.Exists)
 				{
-					yield return item.Name;
+					if ((File.GetAttributes(item.FullName) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint)
+					{
+						yield return item.Name;
+					}
+					else continue;
 				}
 				else continue;
 			}
@@ -161,9 +165,14 @@ namespace WebDiskBrowser.Managers
 		{
 			try
 			{
-				var getInfo = new DirectoryInfo(path);
-				var getSubDirs = getInfo.EnumerateDirectories();
-				return TryConvertEntries(getSubDirs);
+				if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint)
+				{
+					var getInfo = new DirectoryInfo(path);
+					var getSubDirs = getInfo.EnumerateDirectories();
+					return TryConvertEntries(getSubDirs);
+				}
+				else return null;
+
 			}
 			catch (UnauthorizedAccessException)
 			{
@@ -181,9 +190,13 @@ namespace WebDiskBrowser.Managers
 		{
 			try
 			{
-				var getInfo = new DirectoryInfo(path);
-				var getFiles = getInfo.EnumerateFiles();
-				return TryConvertEntries(getFiles);
+				if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint)
+				{
+					var getInfo = new DirectoryInfo(path);
+					var getFiles = getInfo.EnumerateFiles();
+					return TryConvertEntries(getFiles);
+				}
+				else return null;
 			}
 			catch (UnauthorizedAccessException)
 			{
@@ -233,7 +246,7 @@ namespace WebDiskBrowser.Managers
 			Stack<string> dirs = new Stack<string>(20);
 			dirs.Push(path);
 
-			while(dirs.Count > 0)
+			while (dirs.Count > 0)
 			{
 				string currentDir = dirs.Pop();
 				IEnumerable<DirectoryInfo> subDirs;
@@ -289,7 +302,7 @@ namespace WebDiskBrowser.Managers
 			{
 				return Uri.UnescapeDataString(path);
 			}
-			else if(Directory.Exists(HttpUtility.HtmlDecode(path)) || File.Exists(HttpUtility.HtmlDecode(path)))
+			else if (Directory.Exists(HttpUtility.HtmlDecode(path)) || File.Exists(HttpUtility.HtmlDecode(path)))
 			{
 				return HttpUtility.HtmlDecode(path);
 			}
